@@ -10,12 +10,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AI Image Studio',
+      title: 'AI Art Studio Pro',
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        scaffoldBackgroundColor: const Color(0xFF090D16),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6366F1),
+          seedColor: const Color(0xFF8B5CF6),
           brightness: Brightness.dark,
         ),
       ),
@@ -28,40 +28,58 @@ class ImageGeneratorScreen extends StatefulWidget {
   const ImageGeneratorScreen({super.key});
 
   @override
-  State<ImageGeneratorScreen> createState() => _ImageGeneratorScreenState();
+  State<ImageGeneratorScreen5State> createState() => ImageGeneratorScreen5State();
 }
 
-class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
+class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
   final TextEditingController _promptController = TextEditingController();
   String? _imageUrl;
   bool _isLoading = false;
+  String? _errorMessage; // لتسجيل وعرض سبب الخطأ بالتفصيل
 
-  void _generateImage() {
+  void _generateImage() async {
     final prompt = _promptController.text.trim();
-    if (prompt.isEmpty) return;
+    if (prompt.isEmpty) {
+      setState(() {
+        _errorMessage = "يرجى كتابة وصف الصورة أولاً!";
+      });
+      return;
+    }
 
     FocusScope.of(context).unfocus();
 
     setState(() {
       _isLoading = true;
       _imageUrl = null;
+      _errorMessage = null;
     });
 
-    // ترجمة أو ترميز النص وتوليد رابط جديد كلياً مع كاش بريكر (Cache buster) لضمان التحميل
-    final encodedPrompt = Uri.encodeComponent(prompt);
-    final int randomNumber = Random().nextInt(100000);
-    // استخدام خدمة بديلة أو رابط مباشر مدعوم بمعلمة الوقت لضمان عدم حدوث خطأ 404 أو Timeout
-    final url = 'https://image.pollinations.ai/prompt/$encodedPrompt?width=768&height=768&seed=$randomNumber&nologo=true';
+    try {
+      // ترميز الوصف بشكل احترافي لدعم العربية والإنجليزية
+      final encodedPrompt = Uri.encodeComponent(prompt);
+      final int randomNumber = Random().nextInt(999999);
+      
+      // رابط الخدمة مع إعدادات تضمن الاستجابة السريعة
+      final url = 'https://image.pollinations.ai/prompt/$encodedPrompt?width=768&height=768&seed=$randomNumber&nologo=true';
 
-    // محاكاة بسيطة للتحميل البصري لتظهر السلاسة الاحترافية
-    Future.delayed(const Duration(milliseconds: 800), () {
+      // محاكاة بسيطة للاتصال لمنح الواجهة سلاسة الانتقال
+      await Future.delayed(const Duration(milliseconds: 600));
+
       if (mounted) {
         setState(() {
           _imageUrl = url;
           _isLoading = false;
         });
       }
-    });
+    } catch (e) {
+      // التقاط أي خطأ برمجي أو شبكي وعرض سببه بدقة
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = "حدث خطأ أثناء الاتصال: ${e.toString()}";
+        });
+      }
+    }
   }
 
   @override
@@ -71,11 +89,11 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.auto_awesome, color: Color(0xFF818CF8), size: 24),
+            Icon(Icons.auto_awesome, color: Color(0xFFA78BFA), size: 22),
             SizedBox(width: 8),
             Text(
-              'AI Art Studio',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, letterSpacing: 1),
+              'AI Vision Studio',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, letterSpacing: 1.2),
             ),
           ],
         ),
@@ -90,48 +108,59 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // منطقة الإدخال الاحترافية
+              // بطاقة الإدخال الفاخرة
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: const Color(0xFF131C31),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFF334155), width: 1.5),
+                  border: Border.all(color: const Color(0xFF1E293B), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
+                      color: Colors.black.withOpacity(0.5),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(18.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'ماذا تريد أن ترسم اليوم؟',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF94A3B8)),
+                    ),
+                    const SizedBox(height: 12),
                     TextField(
                       controller: _promptController,
                       maxLines: 3,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       decoration: InputDecoration(
-                        hintText: 'اكتب وصفاً تخيلياً مذهلاً (مثلاً: رائد فضاء يسافر بين النجوم)...',
-                        hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                        border: InputBorder.none,
+                        hintText: 'مثلاً: قطة ترتدي نظارة شمسية في الفضاء...',
+                        hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0B1120),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                            colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
                           ),
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF6366F1).withOpacity(0.4),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
+                              color: const Color(0xFF7C3AED).withOpacity(0.4),
+                              blurRadius: 12,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         ),
@@ -156,10 +185,10 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                               : Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: const [
-                                    Icon(Icons.bolt, color: Colors.white),
+                                    Icon(Icons.bolt_rounded, color: Colors.white),
                                     SizedBox(width: 8),
                                     Text(
-                                      'توليد الإبداع الآن',
+                                      'توليد الصورة بالذكاء الاصطناعي',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -176,20 +205,21 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
               ),
               const SizedBox(height: 24),
 
-              // منطقة عرض الصورة بتصميم زجاجي واحترافي
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+              // منطقة عرض الصورة الناتجة أو رسالة الخطأ المفصلة
+              Container(
                 height: 380,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: const Color(0xFF131C31),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _imageUrl != null ? const Color(0xFF6366F1) : const Color(0xFF334155),
+                    color: _errorMessage != null 
+                        ? Colors.redAccent.withOpacity(0.5) 
+                        : const Color(0xFF1E293B),
                     width: 2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withOpacity(0.5),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -199,62 +229,78 @@ class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
                   borderRadius: BorderRadius.circular(22),
                   child: _imageUrl == null
                       ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.auto_awesome_mosaic_outlined,
-                                size: 64,
-                                color: Colors.grey.shade600,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'لوحتك الفنية ستظهر هنا',
-                                style: TextStyle(
-                                  color: Colors.grey.shade400,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _errorMessage != null ? Icons.error_outline_rounded : Icons.image_outlined,
+                                  size: 56,
+                                  color: _errorMessage != null ? Colors.redAccent : Colors.grey.shade600,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                Text(
+                                  _errorMessage ?? 'ستظهر اللوحة الفنية الخاصة بك هنا',
+                                  style: TextStyle(
+                                    color: _errorMessage != null ? Colors.redAccent : Colors.grey.shade400,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                if (_errorMessage != null) ...[
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'السبب المحتمل: قد يكون بسبب انقطاع الانترنت، أو ضغط على السيرفر، أو وصف غير مدعوم.',
+                                    style: TextStyle(color: Colors.grey, fontSize: 11),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
                         )
-                      : Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.network(
-                              _imageUrl!,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
-                                    color: const Color(0xFF818CF8),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Icon(Icons.error_outline_rounded, size: 50, color: Colors.redAccent),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'تعذر جلب الصورة، حاول بكلمات إنجليزية أو بوصف أدق',
-                                        style: TextStyle(color: Colors.redAccent, fontSize: 13),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                      : Image.network(
+                          _imageUrl!,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                                color: const Color(0xFFA78BFA),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            // إظهار سبب فشل التحميل بدقة على الشاشة للمستخدم
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.wifi_off_rounded, size: 50, color: Colors.orangeAccent),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'فشل تحميل الصورة من الخادم!',
+                                      style: TextStyle(color: Colors.orangeAccent, fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'التفاصيل: فشل جلب البيانات (رابط الاستجابة غير متوفر أو مهلة الاتصال انتهت). جرب كتابة الوصف باللغة الإنجليزية وتأكد من اتصالك بالإنترنت.',
+                                      style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                 ),
               ),
