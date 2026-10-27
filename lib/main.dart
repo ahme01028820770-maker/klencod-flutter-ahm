@@ -28,14 +28,14 @@ class ImageGeneratorScreen extends StatefulWidget {
   const ImageGeneratorScreen({super.key});
 
   @override
-  State<ImageGeneratorScreen5State> createState() => ImageGeneratorScreen5State();
+  State<ImageGeneratorScreen> createState() => _ImageGeneratorScreenState();
 }
 
-class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
+class _ImageGeneratorScreenState extends State<ImageGeneratorScreen> {
   final TextEditingController _promptController = TextEditingController();
   String? _imageUrl;
   bool _isLoading = false;
-  String? _errorMessage; // لتسجيل وعرض سبب الخطأ بالتفصيل
+  String? _errorMessage;
 
   void _generateImage() async {
     final prompt = _promptController.text.trim();
@@ -55,14 +55,10 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
     });
 
     try {
-      // ترميز الوصف بشكل احترافي لدعم العربية والإنجليزية
       final encodedPrompt = Uri.encodeComponent(prompt);
       final int randomNumber = Random().nextInt(999999);
-      
-      // رابط الخدمة مع إعدادات تضمن الاستجابة السريعة
       final url = 'https://image.pollinations.ai/prompt/$encodedPrompt?width=768&height=768&seed=$randomNumber&nologo=true';
 
-      // محاكاة بسيطة للاتصال لمنح الواجهة سلاسة الانتقال
       await Future.delayed(const Duration(milliseconds: 600));
 
       if (mounted) {
@@ -72,7 +68,6 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
         });
       }
     } catch (e) {
-      // التقاط أي خطأ برمجي أو شبكي وعرض سببه بدقة
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -108,7 +103,6 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // بطاقة الإدخال الفاخرة
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF131C31),
@@ -204,8 +198,6 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // منطقة عرض الصورة الناتجة أو رسالة الخطأ المفصلة
               Container(
                 height: 380,
                 decoration: BoxDecoration(
@@ -249,14 +241,6 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                if (_errorMessage != null) ...[
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'السبب المحتمل: قد يكون بسبب انقطاع الانترنت، أو ضغط على السيرفر، أو وصف غير مدعوم.',
-                                    style: TextStyle(color: Colors.grey, fontSize: 11),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
                               ],
                             ),
                           ),
@@ -277,23 +261,22 @@ class ImageGeneratorScreen5State extends State<ImageGeneratorScreen> {
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {
-                            // إظهار سبب فشل التحميل بدقة على الشاشة للمستخدم
                             return Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.wifi_off_rounded, size: 50, color: Colors.orangeAccent),
-                                    const SizedBox(height: 12),
-                                    const Text(
+                                  children: const [
+                                    Icon(Icons.wifi_off_rounded, size: 50, color: Colors.orangeAccent),
+                                    SizedBox(height: 12),
+                                    Text(
                                       'فشل تحميل الصورة من الخادم!',
                                       style: TextStyle(color: Colors.orangeAccent, fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: 8),
                                     Text(
-                                      'التفاصيل: فشل جلب البيانات (رابط الاستجابة غير متوفر أو مهلة الاتصال انتهت). جرب كتابة الوصف باللغة الإنجليزية وتأكد من اتصالك بالإنترنت.',
-                                      style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                                      'السبب: تعذر الاتصال بخدمة توليد الصور أو أن الوصف غير مدعوم. جرب وصفاً باللغة الإنجليزية.',
+                                      style: TextStyle(color: Colors.grey, fontSize: 12),
                                       textAlign: TextAlign.center,
                                     ),
                                   ],
